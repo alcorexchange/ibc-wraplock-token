@@ -101,6 +101,7 @@ namespace eosio {
            name             owner;
            extended_asset   quantity;
            name             beneficiary;
+           string           memo;
          };
 
          /**

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <wraplock.hpp>
 
 namespace eosio {
@@ -161,10 +162,27 @@ void wraplock::deposit(name from, name to, asset quantity, string memo)
 
       add_reserve( extended_asset{quantity, get_sender()} );
 
+      string parsed_memo = "";
+      string beneficiary = "";
+
+      // we use X as separator for <account>X<memo>
+      auto delimiter = memo. find('X');
+
+      if (delimiter != std::string::npos) {
+         beneficiary = memo.substr(0, delimiter);
+         parsed_memo = memo.substr(delimiter + 1);
+
+         // We do this for supporting Binance/CEX's "memo" format.
+         std::replace( beneficiary.begin(), beneficiary.end(), '0', '.');
+      } else {
+         beneficiary = memo. substr(0, delimiter);
+      }
+
       wraplock::xfer x = {
         .owner = from,
         .quantity = extended_asset(quantity, get_sender()),
-        .beneficiary = name(memo)
+        .beneficiary = name(beneficiary),
+        .memo = parsed_memo
       };
 
       wraplock::emitxfer_action act(_self, permission_level{_self, "active"_n});
@@ -258,7 +276,8 @@ void wraplock::_cancel(const name& prover, const bridge::actionproof actionproof
     wraplock::xfer x = {
       .owner = _self, // todo - check whether this should show as redeem_act.beneficiary
       .quantity = extended_asset(redeem_act.quantity.quantity, redeem_act.quantity.contract),
-      .beneficiary = redeem_act.owner
+      .beneficiary = redeem_act.owner,
+      .memo = redeem_act.memo
     };
 
     // return to redeem_act.owner so can be withdrawn from wraplock
