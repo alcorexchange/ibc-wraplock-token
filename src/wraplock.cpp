@@ -207,7 +207,7 @@ void wraplock::_withdraw(const name& prover, const bridge::actionproof actionpro
     sub_reserve( extended_asset{redeem_act.quantity.quantity, redeem_act.quantity.contract} );
 
     wraplock::transfer_action act(redeem_act.quantity.contract, permission_level{_self, "active"_n});
-    act.send(_self, redeem_act.beneficiary, redeem_act.quantity.quantity, std::string("") );
+    act.send(_self, redeem_act.beneficiary, redeem_act.quantity.quantity, redeem_act.memo );
 
 }
 
