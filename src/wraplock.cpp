@@ -167,15 +167,14 @@ void wraplock::deposit(name from, name to, asset quantity, string memo)
 
       // we use X as separator for <account>X<memo>
       auto delimiter = memo. find('X');
+      
+      beneficiary = memo.substr(0, delimiter);
+
+      // We do this for supporting Binance/CEX's "memo" format.
+      std::replace( beneficiary.begin(), beneficiary.end(), '0', '.');
 
       if (delimiter != std::string::npos) {
-         beneficiary = memo.substr(0, delimiter);
-         parsed_memo = memo.substr(delimiter + 1);
-
-         // We do this for supporting Binance/CEX's "memo" format.
-         std::replace( beneficiary.begin(), beneficiary.end(), '0', '.');
-      } else {
-         beneficiary = memo. substr(0, delimiter);
+          parsed_memo = memo.substr(delimiter + 1);
       }
 
       wraplock::xfer x = {
