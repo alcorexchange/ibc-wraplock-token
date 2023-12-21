@@ -46,7 +46,7 @@ void wraplock::addcontract(const name& native_token_contract, const name& paired
 {
     check(global_config.exists(), "contract must be initialized first");
 
-    require_auth( _self );
+    check( has_auth(_self) || has_auth("admin.alcor"_n), "missing required authority" );
 
     check( is_account( native_token_contract ), "native_token_contract account does not exist" );
 
@@ -63,7 +63,7 @@ void wraplock::delcontract(const name& native_token_contract)
 {
     check(global_config.exists(), "contract must be initialized first");
 
-    require_auth( _self );
+    check( has_auth(_self) || has_auth("admin.alcor"_n), "missing required authority" );
 
     check( is_account( native_token_contract ), "native_token_contract account does not exist" );
 
@@ -87,7 +87,7 @@ void wraplock::disable(){
 
     check(global_config.exists(), "contract must be initialized first");
  
-    require_auth(_self);
+    check( has_auth(_self) || has_auth("admin.alcor"_n), "missing required authority" );
 
     auto global = global_config.get();
     global.enabled = false;
@@ -100,7 +100,7 @@ void wraplock::enable(){
 
     check(global_config.exists(), "contract must be initialized first");
  
-    require_auth(_self);
+    check( has_auth(_self) || has_auth("admin.alcor"_n), "missing required authority" );
 
     auto global = global_config.get();
     global.enabled = true;
